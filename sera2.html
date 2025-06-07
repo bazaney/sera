@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <title>Topraksız Çilek Hesaplayıcı</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+      color: #333;
+    }
+    h2 {
+      color: #2c3e50;
+      border-bottom: 2px solid #3498db;
+      padding-bottom: 10px;
+    }
+    form {
+      background: #f9f9f9;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    input {
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      width: 100px;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background-color 0.3s;
+      margin-right: 10px;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    #sonuclar {
+      background: #f0f0f0;
+      padding: 15px;
+      border-radius: 8px;
+      list-style-type: none;
+      margin-top: 20px;
+    }
+    #sonuclar li {
+      padding: 8px 0;
+      border-bottom: 1px solid #ddd;
+    }
+    #sonuclar li:last-child {
+      border-bottom: none;
+    }
+    .highlight {
+      color: #e74c3c;
+      font-weight: bold;
+    }
+    .tooltip {
+      position: relative;
+      display: inline-block;
+      cursor: help;
+      color: #3498db;
+      font-weight: bold;
+      margin-left: 5px;
+    }
+    .tooltip .tooltiptext {
+      visibility: hidden;
+      width: 200px;
+      background-color: #555;
+      color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      padding: 5px;
+      position: absolute;
+      z-index: 1;
+      bottom: 125%;
+      left: 50%;
+      margin-left: -100px;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .tooltip:hover .tooltiptext {
+      visibility: visible;
+      opacity: 1;
+    }
+    @media (max-width: 600px) {
+      input {
+        width: 80%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h2>Topraksız Çilek Hesaplayıcı</h2>
+  <form onsubmit="hesapla(); return false;">
+    <label>
+      Sera Eni (m):
+      <input type="number" id="seraEni" value="20" step="0.1" min="1" required />
+      <span class="tooltip">i
+        <span class="tooltiptext">Seranızın en ölçüsünü metre cinsinden giriniz</span>
+      </span>
+    </label>
+    <label>
+      Sera Boyu (m):
+      <input type="number" id="seraBoyu" value="50" step="0.1" min="1" required />
+      <span class="tooltip">i
+        <span class="tooltiptext">Seranızın boy ölçüsünü metre cinsinden giriniz</span>
+      </span>
+    </label>
+    <label>
+      Duvar Boşluğu (m) (Her tarafta):
+      <input type="number" id="duvarBoslugu" value="1" step="0.01" min="0" required />
+      <span class="tooltip">i
+        <span class="tooltiptext">Seranın tüm kenarlarında bulunan boşluk (üst, alt, sol, sağ)</span>
+      </span>
+    </label>
+    <label>
+      Ara Yol Genişliği (m):
+      <input type="number" id="araYol" value="2" step="0.1" min="0" required />
+      <span class="tooltip">i
+        <span class="tooltiptext">Seranın ortasındaki ara yol genişliği</span>
+      </span>
+    </label>
+    <label>
+      Taşıyıcı Genişliği (m) (Bir blok genişliği):
+      <input type="number" id="tasiyiciGenisligi" value="0.75" step="0.01" min="0.1" required />
+      <span class="tooltip">i
+        <span class="tooltiptext">Bir taşıyıcının genişliği, bir bloğun eni</span>
+      </span>
+    </label>
+    <label>
+      Taşıyıcılar Arası Boşluk (m):
+      <input type="number" id="tasiyiciArasiBosluk" value="0.5" step="0.01" min="0" required />
+      <span class="tooltip">i
+        <span class="tooltiptext">Taşıyıcılar arasındaki boşluk (bloklar arası mesafe)</span>
+      </span>
+    </label>
+    <label>
+      Taşıyıcı Arası Mesafe (m) (Blokta kaç taşıyıcı olacak):
+      <input type="number" id="tasiyiciArasiMesafe" value="1.5" step="0.01" min="0.1" required />
+      <span class="tooltip">i
+        <span class="tooltiptext">Taşıyıcılar arası mesafe, dikey yönde aralık</span>
+      </span>
+    </label>
+    <label>
+      Taşıyıcı Yüksekliği (m):
+      <input type="number" id="tasiyiciYuksekligi" value="0.5" step="0.01" min="0" required />
+      <span class="tooltip">i
+        <span class="tooltiptext">Bir taşıyıcının yüksekliği, metre cinsinden</span>
+      </span>
+    </label>
+    <label>
+      Kokopit Başına Fide Sayısı:
+      <input type="number" id="kokopitFideSayisi" value="13" step="1" min="1" required />
+      <span class="tooltip">i
+        <span class="tooltiptext">Bir kokopite kaç fide yerleştirileceğini giriniz</span>
+      </span>
+    </label>
+
+    <!-- Fiyatlar -->
+    <hr />
+    <h3>Fiyat Bilgileri (TL)</h3>
+    <label>
+      Fide Adet Fiyatı:
+      <input type="number" id="fideFiyat" value="5" step="0.01" min="0" required />
+    </label>
+    <label>
+      Profil (6 metre) Fiyatı:
+      <input type="number" id="profilFiyat" value="150" step="0.01" min="0" required />
+    </label>
+    <label>
+      Oluk Metre Fiyatı:
+      <input type="number" id="olukFiyat" value="10" step="0.01" min="0" required />
+    </label>
+    <label>
+      Kokopit Adet Fiyatı:
+      <input type="number" id="kokopitFiyat" value="1" step="0.01" min="0" required />
+    </label>
+
+    <button type="submit">Hesapla</button>
+    <button type="button" onclick="varsayilanlariYukle()">Varsayılanları Yükle</button>
+  </form>
+
+  <ul id="sonuclar"></ul>
+
+  <script>
+    function hesapla() {
+      // Girdi değerleri
+      const seraEni = parseFloat(document.getElementById('seraEni').value);
+      const seraBoyu = parseFloat(document.getElementById('seraBoyu').value);
+      const duvarBoslugu = parseFloat(document.getElementById('duvarBoslugu').value);
+      const araYol = parseFloat(document.getElementById('araYol').value);
+      const tasiyiciGenisligi = parseFloat(document.getElementById('tasiyiciGenisligi').value);
+      const tasiyiciArasiBosluk = parseFloat(document.getElementById('tasiyiciArasiBosluk').value);
+      const tasiyiciArasiMesafe = parseFloat(document.getElementById('tasiyiciArasiMesafe').value);
+      const tasiyiciYuksekligi = parseFloat(document.getElementById('tasiyiciYuksekligi').value);
+      const kokopitFideSayisi = parseInt(document.getElementById('kokopitFideSayisi').value);
+
+      // Fiyat değerleri
+      const fideFiyat = parseFloat(document.getElementById('fideFiyat').value);
+      const profilFiyat = parseFloat(document.getElementById('profilFiyat').value);
+      const olukFiyat = parseFloat(document.getElementById('olukFiyat').value);
+      const kokopitFiyat = parseFloat(document.getElementById('kokopitFiyat').value);
+
+      // Yetiştirme ortamı eni = sera eni - (sol+sağ) duvar boşluğu
+      const yetistirmeOrtamiEn = seraEni - 2 * duvarBoslugu;
+
+      // Yetiştirme ortamı boyu = (sera boyu - üst+alt duvar boşlukları - ara yol) / 2 (iki yetiştirme ortamında)
+      const yetistirmeOrtamiBoy = (seraBoyu - 2 * duvarBoslugu - araYol) / 2;
+
+      // Blok genişliği (bir blok eni) = taşıyıcı genişliği + taşıyıcılar arası boşluk
+      const blokGenisligi = tasiyiciGenisligi + tasiyiciArasiBosluk;
+
+      // Blok sayısı = yetiştirme ortamı eni / blok genişliği, floor
+      const blokSayisi = Math.floor(yetistirmeOrtamiEn / blokGenisligi);
+
+      // Taşıyıcı sayısı (sıra sayısı, dikey) = yetiştirme ortamı boyu / taşıyıcı arası mesafe, floor + 1
+      const tasiyiciSayisi = Math.floor(yetistirmeOrtamiBoy / tasiyiciArasiMesafe) + 1;
+
+      // Toplam taşıyıcı sayısı = blok sayısı x taşıyıcı sayısı
+      let toplamTasiyiciSayisi = blokSayisi * tasiyiciSayisi;
+
+      // Toplam oluk sayısı = blok sayısı x 2 (2 oluk/blok)
+      let toplamOlukSayisi = blokSayisi * 2;
+
+      // Toplam oluk uzunluğu = yetiştirme ortamı boyu x toplam oluk sayısı
+      let toplamOlukUzunlugu = yetistirmeOrtamiBoy * toplamOlukSayisi;
+
+      // Çarpma işlemi (2 ile, iki taraf için)
+      toplamTasiyiciSayisi *= 2;
+      toplamOlukSayisi *= 2;
+      toplamOlukUzunlugu *= 2;
+
+      // Kokopit adeti = toplam oluk uzunluğu (metre cinsinden, adet olduğu için yuvarlanabilir)
+      const kokopitAdeti = Math.round(toplamOlukUzunlugu);
+
+      // Fidelerin hesaplanması: kullanıcıdan alınan kokopit başına fide sayısı ile
+      const fideSayisi = kokopitAdeti * kokopitFideSayisi;
+
+      // Taşıyıcı toplam uzunluğu (profil için)
+      const tasiyiciUzunlugu = tasiyiciYuksekligi + tasiyiciGenisligi;
+
+      // Toplam profil uzunluğu (metre)
+      const toplamProfilUzunlugu = toplamTasiyiciSayisi * tasiyiciUzunlugu;
+
+      // Fiyat hesaplamaları
+      const toplamFideFiyat = fideSayisi * fideFiyat;
+      // Profil fiyatı 6 metrelik bazda, toplamProfilUzunlugu / 6 x profilFiyat
+      const toplamProfilFiyat = (toplamProfilUzunlugu / 6) * profilFiyat;
+      const toplamOlukFiyat = toplamOlukUzunlugu * olukFiyat;
+      const toplamKokopitFiyat = kokopitAdeti * kokopitFiyat;
+
+      // Sonuçları göster
+      const sonuclar = document.getElementById('sonuclar');
+      sonuclar.innerHTML = `
+        <li>Gerekli Fide Sayısı (Kokopit başına <span class="highlight">${kokopitFideSayisi}</span> fide): <span class="highlight">${fideSayisi}</span></li>
+        <li>Yetiştirme Ortamı En: <span class="highlight">${yetistirmeOrtamiEn.toFixed(2)} m</span></li>
+        <li>Yetiştirme Ortamı Boy (1 blok uzunluğu): <span class="highlight">${yetistirmeOrtamiBoy.toFixed(2)} m</span></li>
+        <li>Toplam Oluk Uzunluğu : <span class="highlight">${toplamOlukUzunlugu.toFixed(2)} m</span></li>
+        <li>Kokopit Adeti (Toplam Oluk Uzunluğuna eşittir): <span class="highlight">${kokopitAdeti} adet</span></li>
+        <li>Toplam Profil Uzunluğu: <span class="highlight">${toplamProfilUzunlugu.toFixed(2)} m</span></li>
+        <li>Blok Sayısı: <span class="highlight">${blokSayisi}</span></li>
+        <li>Taşıyıcı Sayısı (Sıra): <span class="highlight">${tasiyiciSayisi}</span></li>
+        <li>Toplam Taşıyıcı Sayısı : <span class="highlight">${toplamTasiyiciSayisi}</span></li>
+
+        <hr />
+
+        <li><strong>Maliyetler (TL)</strong></li>
+        <li>Fide Maliyeti: <span class="highlight">${toplamFideFiyat.toFixed(2)} TL</span></li>
+        <li>Profil Maliyeti: <span class="highlight">${toplamProfilFiyat.toFixed(2)} TL</span></li>
+        <li>Oluk Maliyeti: <span class="highlight">${toplamOlukFiyat.toFixed(2)} TL</span></li>
+        <li>Kokopit Maliyeti: <span class="highlight">${toplamKokopitFiyat.toFixed(2)} TL</span></li>
+      `;
+    }
+
+    // Varsayılanları formda yeniden yüklemek için fonksiyon
+    function varsayilanlariYukle() {
+      document.getElementById('seraEni').value = 20;
+      document.getElementById('seraBoyu').value = 50;
+      document.getElementById('duvarBoslugu').value = 1;
+      document.getElementById('araYol').value = 2;
+      document.getElementById('tasiyiciGenisligi').value = 0.75;
+      document.getElementById('tasiyiciArasiBosluk').value = 0.5;
+      document.getElementById('tasiyiciArasiMesafe').value = 1.5;
+      document.getElementById('tasiyiciYuksekligi').value = 0.5;
+      document.getElementById('kokopitFideSayisi').value = 13;
+
+      // Fiyatlar
+      document.getElementById('fideFiyat').value = 5;
+      document.getElementById('profilFiyat').value = 150;
+      document.getElementById('olukFiyat').value = 10;
+      document.getElementById('kokopitFiyat').value = 1;
+
+      document.getElementById('sonuclar').innerHTML = '';
+    }
+  </script>
+</body>
+</html>
