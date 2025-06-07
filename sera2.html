@@ -250,30 +250,41 @@
       const fideSayisi = kokopitAdeti * kokopitFideSayisi;
 
       // Taşıyıcı toplam uzunluğu (profil için)
-      const tasiyiciUzunlugu = tasiyiciYuksekligi + tasiyiciGenisligi;
+      const tasiyiciBoyu = tasiyiciYuksekligi;
+      const toplamProfilUzunlugu = toplamTasiyiciSayisi * tasiyiciBoyu;
 
-      // Toplam profil uzunluğu (metre)
-      const toplamProfilUzunlugu = toplamTasiyiciSayisi * tasiyiciUzunlugu;
-
-      // Fiyat hesaplamaları
+      // Maliyet hesaplamaları
       const toplamFideFiyat = fideSayisi * fideFiyat;
-      // Profil fiyatı 6 metrelik bazda, toplamProfilUzunlugu / 6 x profilFiyat
       const toplamProfilFiyat = (toplamProfilUzunlugu / 6) * profilFiyat;
       const toplamOlukFiyat = toplamOlukUzunlugu * olukFiyat;
       const toplamKokopitFiyat = kokopitAdeti * kokopitFiyat;
 
-      // Sonuçları göster
+      // ** ALAN HESAPLAMALARI **
+
+      // Sera toplam alanı (brüt)
+      const seraAlan = seraEni * seraBoyu;
+
+      // Yetiştirme ortamı alanı (net alan)
+      const yetistirmeOrtamiAlan = yetistirmeOrtamiEn * (yetistirmeOrtamiBoy * 2);
+
+      // Verimli alan: blok sayısı x taşıyıcı genişliği x yetiştirme ortamı boyu x 2
+      const verimliAlan = blokSayisi * tasiyiciGenisligi * (yetistirmeOrtamiBoy * 2);
+
+      // Sonuçların gösterimi
       const sonuclar = document.getElementById('sonuclar');
       sonuclar.innerHTML = `
         <li>Gerekli Fide Sayısı (Kokopit başına <span class="highlight">${kokopitFideSayisi}</span> fide): <span class="highlight">${fideSayisi}</span></li>
         <li>Yetiştirme Ortamı En: <span class="highlight">${yetistirmeOrtamiEn.toFixed(2)} m</span></li>
         <li>Yetiştirme Ortamı Boy (1 blok uzunluğu): <span class="highlight">${yetistirmeOrtamiBoy.toFixed(2)} m</span></li>
-        <li>Toplam Oluk Uzunluğu : <span class="highlight">${toplamOlukUzunlugu.toFixed(2)} m</span></li>
+        <li>Toplam Oluk Uzunluğu: <span class="highlight">${toplamOlukUzunlugu.toFixed(2)} m</span></li>
         <li>Kokopit Adeti (Toplam Oluk Uzunluğuna eşittir): <span class="highlight">${kokopitAdeti} adet</span></li>
         <li>Toplam Profil Uzunluğu: <span class="highlight">${toplamProfilUzunlugu.toFixed(2)} m</span></li>
         <li>Blok Sayısı: <span class="highlight">${blokSayisi}</span></li>
         <li>Taşıyıcı Sayısı (Sıra): <span class="highlight">${tasiyiciSayisi}</span></li>
-        <li>Toplam Taşıyıcı Sayısı : <span class="highlight">${toplamTasiyiciSayisi}</span></li>
+        <li>Toplam Taşıyıcı Sayısı: <span class="highlight">${toplamTasiyiciSayisi}</span></li>
+
+        <li>Sera Alanı (Brüt): <span class="highlight">${seraAlan.toFixed(2)} m²</span></li>
+        <li>Yetiştirme Ortamı Alanı (Net): <span class="highlight">${yetistirmeOrtamiAlan.toFixed(2)} m²</span></li>
 
         <hr />
 
@@ -285,7 +296,6 @@
       `;
     }
 
-    // Varsayılanları formda yeniden yüklemek için fonksiyon
     function varsayilanlariYukle() {
       document.getElementById('seraEni').value = 20;
       document.getElementById('seraBoyu').value = 50;
@@ -296,8 +306,6 @@
       document.getElementById('tasiyiciArasiMesafe').value = 1.5;
       document.getElementById('tasiyiciYuksekligi').value = 0.5;
       document.getElementById('kokopitFideSayisi').value = 13;
-
-      // Fiyatlar
       document.getElementById('fideFiyat').value = 5;
       document.getElementById('profilFiyat').value = 150;
       document.getElementById('olukFiyat').value = 10;
@@ -305,6 +313,9 @@
 
       document.getElementById('sonuclar').innerHTML = '';
     }
+
+    // Sayfa açıldığında varsayılan değerler yüklensin
+    window.onload = varsayilanlariYukle;
   </script>
 </body>
 </html>
